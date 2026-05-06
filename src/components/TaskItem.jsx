@@ -1,7 +1,5 @@
 import { useState } from 'react'
 import { format } from 'date-fns'
-import { useAuth } from '../contexts/AuthContext'
-import { updateTask } from '../lib/storage'
 
 const PRIORITY_COLORS = {
   low: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
@@ -9,10 +7,16 @@ const PRIORITY_COLORS = {
   high: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
 }
 
-export default function TaskItem({ task, onToggle, onDelete, onEdit, isEditing, onSaveEdit }) {
-  const { user } = useAuth()
+const STATUS_OPTIONS = [
+  { id: 'todo', label: 'To do' },
+  { id: 'in-progress', label: 'In progress' },
+  { id: 'done', label: 'Done' },
+]
+
+export default function TaskItem({ task, onToggle, onDelete, onEdit, isEditing, onSaveEdit, onStatusChange }) {
   const [editTitle, setEditTitle] = useState(task.title)
   const [editDesc, setEditDesc] = useState(task.description || '')
+  const taskStatus = task.status || (task.completed ? 'done' : 'todo')
 
   const handleSave = () => {
     if (editTitle.trim()) {
@@ -74,6 +78,18 @@ export default function TaskItem({ task, onToggle, onDelete, onEdit, isEditing, 
               <p className="text-sm text-charcoal/60 dark:text-gray-400 mt-0.5">{task.description}</p>
             )}
             <div className="flex flex-wrap items-center gap-2 mt-2">
+              {onStatusChange && (
+                <select
+                  value={taskStatus}
+                  onChange={(e) => onStatusChange(e.target.value)}
+                  className="text-xs px-2 py-1 rounded-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-charcoal/50 text-charcoal dark:text-gray-300"
+                  aria-label="Task status"
+                >
+                  {STATUS_OPTIONS.map(status => (
+                    <option key={status.id} value={status.id}>{status.label}</option>
+                  ))}
+                </select>
+              )}
               {task.dueDate && (
                 <span className="text-xs text-charcoal/50 dark:text-gray-500">
                   {format(new Date(task.dueDate), 'MMM d, yyyy')}
@@ -89,6 +105,11 @@ export default function TaskItem({ task, onToggle, onDelete, onEdit, isEditing, 
                   {tag}
                 </span>
               ))}
+              {task.updatedAt && (
+                <span className="text-xs text-charcoal/40 dark:text-gray-500">
+                  Updated {format(new Date(task.updatedAt), 'MMM d')}
+                </span>
+              )}
             </div>
           </>
         )}

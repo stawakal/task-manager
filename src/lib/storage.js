@@ -35,7 +35,13 @@ export async function fetchTasks(userId) {
   if (isFirebaseConfigured()) {
     const q = query(collection(db, 'tasks'), where('userId', '==', userId));
     const snapshot = await getDocs(q);
-    const tasks = snapshot.docs.map(d => ({ id: d.id, ...d.data(), createdAt: d.data().createdAt?.toDate?.() }));
+    const tasks = snapshot.docs.map(d => ({
+      id: d.id,
+      ...d.data(),
+      createdAt: d.data().createdAt?.toDate?.(),
+      updatedAt: d.data().updatedAt?.toDate?.(),
+      completedAt: d.data().completedAt?.toDate?.(),
+    }));
     return tasks.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
   }
   
@@ -48,7 +54,13 @@ export function subscribeTasks(userId, callback) {
   if (isFirebaseConfigured()) {
     const q = query(collection(db, 'tasks'), where('userId', '==', userId));
     return onSnapshot(q, (snapshot) => {
-      const tasks = snapshot.docs.map(d => ({ id: d.id, ...d.data(), createdAt: d.data().createdAt?.toDate?.() }));
+      const tasks = snapshot.docs.map(d => ({
+        id: d.id,
+        ...d.data(),
+        createdAt: d.data().createdAt?.toDate?.(),
+        updatedAt: d.data().updatedAt?.toDate?.(),
+        completedAt: d.data().completedAt?.toDate?.(),
+      }));
       callback(tasks.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)));
     });
   }
@@ -59,17 +71,20 @@ export function subscribeTasks(userId, callback) {
 }
 
 export async function addTask(userId, task) {
+  const now = new Date();
   const taskData = {
     ...task,
     userId,
     status: task.status || 'todo',
-    createdAt: new Date(),
+    createdAt: now,
+    updatedAt: now,
   };
 
   if (isFirebaseConfigured()) {
     const docRef = await addDoc(collection(db, 'tasks'), {
       ...taskData,
       createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
     });
     return { id: docRef.id, ...taskData };
   }
@@ -82,15 +97,45 @@ export async function addTask(userId, task) {
 }
 
 export async function updateTask(userId, taskId, updates) {
+  const status = updates.status;
+  const completed = updates.completed;
+  const doneByStatus = status === 'done';
+  const undoneByStatus = typeof status === 'string' && status !== 'done';
+  const doneByCompletion = completed === true;
+  const undoneByCompletion = completed === false;
+
   if (isFirebaseConfigured()) {
-    await updateDoc(doc(db, 'tasks', taskId), updates);
+    const payload = {
+      ...updates,
+      updatedAt: Timestamp.now(),
+    };
+
+    if (doneByStatus || doneByCompletion) {
+      payload.completedAt = Timestamp.now();
+    } else if (undoneByStatus || undoneByCompletion) {
+      payload.completedAt = null;
+    }
+
+    await updateDoc(doc(db, 'tasks', taskId), payload);
     return;
   }
 
   const tasks = getLocalTasks(userId);
   const idx = tasks.findIndex(t => t.id === taskId);
   if (idx !== -1) {
-    tasks[idx] = { ...tasks[idx], ...updates };
+    const nextTask = {
+      ...tasks[idx],
+      ...updates,
+      updatedAt: new Date(),
+    };
+
+    if (doneByStatus || doneByCompletion) {
+      nextTask.completedAt = new Date();
+    } else if (undoneByStatus || undoneByCompletion) {
+      nextTask.completedAt = null;
+    }
+
+    tasks[idx] = nextTask;
     saveLocalTasks(userId, tasks);
   }
 }

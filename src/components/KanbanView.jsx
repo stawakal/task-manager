@@ -79,6 +79,7 @@ export default function KanbanView({ tasks, onDelete }) {
                     await updateTask(user.uid, task.id, updates)
                     setEditingId(null)
                   }}
+                  onStatusChange={(newStatus) => handleStatusChange(task.id, newStatus)}
                 />
               </div>
             ))}

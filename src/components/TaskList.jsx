@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { format } from 'date-fns'
 import { useAuth } from '../contexts/AuthContext'
 import { updateTask } from '../lib/storage'
 import TaskItem from './TaskItem'
@@ -14,7 +13,10 @@ export default function TaskList({ tasks, onDelete, showSections = true, filtere
   }
 
   const handleStatusChange = async (task, newStatus) => {
-    await updateTask(user.uid, task.id, { status: newStatus })
+    await updateTask(user.uid, task.id, {
+      status: newStatus,
+      completed: newStatus === 'done',
+    })
   }
 
   if (tasks.length === 0) {
@@ -40,6 +42,7 @@ export default function TaskList({ tasks, onDelete, showSections = true, filtere
             await updateTask(user.uid, task.id, updates)
             setEditingId(null)
           }}
+          onStatusChange={(newStatus) => handleStatusChange(task, newStatus)}
         />
       ))}
     </ul>

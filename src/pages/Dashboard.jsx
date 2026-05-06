@@ -89,11 +89,16 @@ export default function Dashboard() {
     <div className="min-h-screen bg-offwhite dark:bg-charcoal">
       {showConfetti && <Confetti />}
 
-      <header className="sticky top-0 z-40 bg-white/90 dark:bg-[#1e1e1e]/95 backdrop-blur-xl border-b border-gray-200/60 dark:border-gray-700/50 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <header className="sticky top-0 z-40 bg-white/85 dark:bg-charcoal/85 backdrop-blur-xl border-b border-gray-200/70 dark:border-white/5">
+        <div className="max-w-6xl mx-auto px-4 py-3.5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-semibold text-charcoal dark:text-white">Flow</h1>
-            <div className="flex items-center gap-2 sm:hidden">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-hero-gradient flex items-center justify-center text-white text-sm font-bold shadow-glow">
+                F
+              </div>
+              <h1 className="text-lg font-semibold tracking-tight text-charcoal dark:text-white">Flow</h1>
+            </div>
+            <div className="flex items-center gap-1 lg:hidden">
               <button onClick={toggle} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10" aria-label="Toggle theme">
                 {dark ? '☀️' : '🌙'}
               </button>
@@ -101,18 +106,21 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <input
-              type="search"
-              placeholder="Search tasks..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 sm:w-64 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-charcoal/50 text-sm focus:ring-2 focus:ring-lavender/50 focus:border-lavender"
-            />
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative flex-1 sm:flex-none">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 text-sm">⌕</span>
+              <input
+                type="search"
+                placeholder="Search tasks"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full sm:w-64 pl-9 pr-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-espresso/60 text-sm focus:ring-2 focus:ring-violet-400/60 focus:border-violet-400 transition"
+              />
+            </div>
             <select
               value={filterPriority}
               onChange={(e) => setFilterPriority(e.target.value)}
-              className="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-charcoal/50 text-sm"
+              className="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-espresso/60 text-sm"
             >
               <option value="">All priorities</option>
               <option value="low">Low</option>
@@ -123,13 +131,13 @@ export default function Dashboard() {
               <select
                 value={filterTag}
                 onChange={(e) => setFilterTag(e.target.value)}
-                className="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-charcoal/50 text-sm"
+                className="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-espresso/60 text-sm"
               >
                 <option value="">All tags</option>
                 {allTags.map(tag => <option key={tag} value={tag}>{tag}</option>)}
               </select>
             )}
-            <div className="hidden sm:flex items-center gap-1">
+            <div className="hidden lg:flex items-center gap-1">
               <button onClick={toggle} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10" aria-label="Toggle theme">
                 {dark ? '☀️' : '🌙'}
               </button>
@@ -137,7 +145,7 @@ export default function Dashboard() {
             </div>
             <button
               onClick={() => logout().then(() => navigate('/auth'))}
-              className="text-sm text-charcoal/60 dark:text-gray-400 hover:text-charcoal dark:hover:text-white"
+              className="text-sm text-charcoal/60 dark:text-gray-400 hover:text-charcoal dark:hover:text-white px-2"
             >
               Log out
             </button>
@@ -145,37 +153,62 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-6">
-        {/* Progress & motivational */}
-        <div className="mb-8 p-6 rounded-2xl bg-white dark:bg-gray-800/50 backdrop-blur border border-gray-200/60 dark:border-gray-700/50 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h2 className="text-lg font-medium text-charcoal dark:text-white">Today</h2>
-              <p className="text-sm text-charcoal/60 dark:text-gray-400 mt-1">{motivationalMessage}</p>
+      <main className="max-w-6xl mx-auto px-4 py-8">
+        {/* Hero card */}
+        <div className="relative mb-6 overflow-hidden rounded-3xl bg-hero-gradient text-white p-6 sm:p-8 shadow-glow">
+          <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-white/10 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-20 -left-10 w-72 h-72 rounded-full bg-white/10 blur-3xl pointer-events-none" />
+          <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="max-w-xl">
+              <p className="text-xs uppercase tracking-[0.2em] text-white/70">{format(new Date(), 'EEEE, MMMM d')}</p>
+              <h2 className="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight">Welcome back{user?.email ? `, ${user.email.split('@')[0]}` : ''}.</h2>
+              <p className="mt-2 text-sm text-white/80">{motivationalMessage}</p>
+              <button
+                onClick={() => { setCreateForDate(null); setShowCreate(true); }}
+                className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-violet-700 font-medium hover:bg-violet-50 transition shadow-soft"
+              >
+                <span className="text-lg leading-none">+</span> New task
+              </button>
             </div>
-            <div className="flex-1 sm:max-w-xs">
-              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-lavender dark:bg-lavender/80 rounded-full transition-all duration-500"
-                  style={{ width: `${progress}%` }}
-                />
+
+            <div className="grid grid-cols-2 gap-2 sm:gap-3 md:min-w-[260px]">
+              <div className="rounded-2xl bg-white/15 backdrop-blur-sm border border-white/15 p-3.5">
+                <p className="text-xs text-white/70">Today</p>
+                <p className="text-2xl font-semibold mt-1">{totalToday}</p>
+                <p className="text-[11px] text-white/70 mt-0.5">{completedToday} done</p>
               </div>
-              <p className="text-xs text-charcoal/50 dark:text-gray-500 mt-1">{completedToday} of {totalToday} tasks done</p>
+              <div className="rounded-2xl bg-white/15 backdrop-blur-sm border border-white/15 p-3.5">
+                <p className="text-xs text-white/70">Overdue</p>
+                <p className="text-2xl font-semibold mt-1">{overdueTasks.length}</p>
+                <p className="text-[11px] text-white/70 mt-0.5">need action</p>
+              </div>
+              <div className="rounded-2xl bg-white/15 backdrop-blur-sm border border-white/15 p-3.5">
+                <p className="text-xs text-white/70">Upcoming</p>
+                <p className="text-2xl font-semibold mt-1">{upcomingTasks.length}</p>
+                <p className="text-[11px] text-white/70 mt-0.5">scheduled</p>
+              </div>
+              <div className="rounded-2xl bg-white/15 backdrop-blur-sm border border-white/15 p-3.5">
+                <p className="text-xs text-white/70">Progress</p>
+                <p className="text-2xl font-semibold mt-1">{progress}%</p>
+                <div className="mt-2 h-1.5 bg-white/20 rounded-full overflow-hidden">
+                  <div className="h-full bg-white rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* View tabs & Add task */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-          <div className="flex gap-2">
+        {/* View tabs */}
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+          <div className="inline-flex p-1 rounded-2xl bg-white dark:bg-espresso/60 border border-gray-200/70 dark:border-white/5 shadow-soft">
             {Object.entries(VIEWS).map(([k, label]) => (
               <button
                 key={k}
                 onClick={() => setView(k)}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
-                  view === k 
-                    ? 'bg-charcoal dark:bg-lavender text-white shadow-sm' 
-                    : 'bg-white dark:bg-gray-800/50 text-charcoal dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 border border-gray-200/60 dark:border-gray-700/50'
+                  view === k
+                    ? 'bg-hero-gradient text-white shadow-glow'
+                    : 'text-charcoal/70 dark:text-gray-300 hover:text-charcoal dark:hover:text-white'
                 }`}
               >
                 {label}
@@ -184,7 +217,7 @@ export default function Dashboard() {
           </div>
           <button
             onClick={() => { setCreateForDate(null); setShowCreate(true); }}
-            className="px-5 py-2.5 rounded-xl bg-charcoal dark:bg-lavender text-white font-medium hover:bg-espresso dark:hover:bg-lavender/90 transition flex items-center gap-2"
+            className="px-5 py-2.5 rounded-xl bg-charcoal dark:bg-violet-500 text-white font-medium hover:bg-espresso dark:hover:bg-violet-400 transition flex items-center gap-2 shadow-soft"
           >
             <span>+</span> Add task
           </button>

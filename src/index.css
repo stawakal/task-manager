@@ -5,13 +5,50 @@
 @layer base {
   body {
     @apply bg-offwhite text-charcoal font-sans antialiased;
+    background-image:
+      radial-gradient(circle at 0% 0%, rgba(139, 92, 246, 0.08), transparent 45%),
+      radial-gradient(circle at 100% 0%, rgba(99, 102, 241, 0.06), transparent 50%);
+    background-attachment: fixed;
   }
   .dark body {
-    @apply bg-[#1e1e1e] text-gray-200;
+    @apply bg-charcoal text-gray-200;
+    background-image:
+      radial-gradient(circle at 0% 0%, rgba(139, 92, 246, 0.18), transparent 45%),
+      radial-gradient(circle at 100% 0%, rgba(99, 102, 241, 0.12), transparent 50%);
+    background-attachment: fixed;
+  }
+
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.25);
+    border-radius: 999px;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: rgba(139, 92, 246, 0.45);
   }
 }
 
-/* Skeleton loading */
+@layer components {
+  .panel {
+    @apply rounded-2xl bg-white dark:bg-espresso/80 border border-gray-200/70 dark:border-white/5 shadow-soft;
+  }
+  .panel-glass {
+    @apply rounded-2xl bg-white/85 dark:bg-espresso/70 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-glass dark:shadow-glass-dark;
+  }
+  .stat-tile {
+    @apply panel p-5 transition-all hover:-translate-y-0.5 hover:shadow-glass;
+  }
+  .pill {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium;
+  }
+}
+
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
@@ -24,6 +61,6 @@
 }
 
 .dark .skeleton {
-  background: linear-gradient(90deg, #3d3d3d 25%, #4a4a4a 50%, #3d3d3d 75%);
+  background: linear-gradient(90deg, #2a2d35 25%, #353841 50%, #2a2d35 75%);
   background-size: 200% 100%;
 }
